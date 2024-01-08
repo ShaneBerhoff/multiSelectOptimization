@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solver</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Solver</h1>
+        <form id="solverForm">
+            <label for="width">Width:</label>
+            <input type="number" id="width" name="width" min="1" max="20" required>
+
+            <label for="probabilities">Probabilities (comma-separated):</label>
+            <input type="text" id="probabilities" name="probabilities" required>
+
+            <button type="submit">Calculate</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
