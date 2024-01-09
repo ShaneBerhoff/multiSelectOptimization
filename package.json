@@ -4,13 +4,18 @@
   "description": "",
   "main": "dist/js/script.js",
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch"
+    "clean": "rimraf dist/",
+    "build-ts": "tsc",
+    "copy-html": "ncp src/index.html dist/index.html",
+    "copy-css": "ncp src/css dist/css",
+    "build": "npm run clean && npm run build-ts && npm run copy-html && npm run copy-css"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "ncp": "^2.0.0",
+    "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   }
 }
