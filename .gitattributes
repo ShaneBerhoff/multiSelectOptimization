@@ -1,0 +1,3 @@
+# Override Linguist's default behavior to allow language statistics
+dist/*.html linguist-generated=false
+dist/css/*.css linguist-generated=false
