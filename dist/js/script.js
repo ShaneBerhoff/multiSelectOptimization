@@ -1,5 +1,5 @@
-"use strict";
 var _a;
+import { Combination } from "./solver.js";
 const optionsSliderIn = document.getElementById("options");
 const optionsSliderOut = document.getElementById("optionsValue");
 const correctAnsSliderIn = document.getElementById("correctAns");
@@ -38,4 +38,9 @@ guessesSliderIn.oninput = () => { guessesSliderOut.innerHTML = guessesSliderIn.v
     resultDiv.appendChild(optionsP);
     resultDiv.appendChild(correctAnsP);
     resultDiv.appendChild(guessesP);
+    // EV Section
+    const combination = new Combination(options, correctAns, guesses);
+    const EVP = document.createElement('p');
+    EVP.innerText = `Expected EV: ${combination.findEV()}`;
+    resultDiv.appendChild(EVP);
 });

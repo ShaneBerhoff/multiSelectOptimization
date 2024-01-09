@@ -1,3 +1,5 @@
+import { Combination } from "./solver.js";
+
 const optionsSliderIn = document.getElementById("options") as HTMLInputElement;
 const optionsSliderOut = document.getElementById("optionsValue") as HTMLElement;
 const correctAnsSliderIn = document.getElementById("correctAns") as HTMLInputElement;
@@ -45,5 +47,11 @@ document.getElementById('solverForm')?.addEventListener('submit', function(event
     resultDiv.appendChild(optionsP);
     resultDiv.appendChild(correctAnsP);
     resultDiv.appendChild(guessesP);
+
+    // EV Section
+    const combination = new Combination(options, correctAns, guesses);
+    const EVP = document.createElement('p');
+    EVP.innerText = `Expected EV: ${combination.findEV()}`;
+    resultDiv.appendChild(EVP);
 });
 
