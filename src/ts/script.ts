@@ -53,5 +53,52 @@ document.getElementById('solverForm')?.addEventListener('submit', function(event
     const EVP = document.createElement('p');
     EVP.innerText = `Expected EV: ${combination.findEV()}`;
     resultDiv.appendChild(EVP);
+
+
+    resultDiv.appendChild(generateTable(totalEV(options)));
+
 });
 
+//Creates a 2d array of EV based on number of options for all possible correctAns and guesses
+function totalEV(options: number): number[][] {
+    const totalEV: number[][] = Array.from({ length: options }, () => Array(options).fill(0));
+    for(let row = 1; row <= options; row++){
+        for(let col = 1; col <= options; col++){
+            const combo = new Combination(options, row, col);
+            totalEV[row-1][col-1] = combo.findEV();
+        }
+    }
+    return totalEV;
+}
+
+//Turns a 2d array into a table
+function generateTable(data: number[][]): HTMLTableElement {
+    const table = document.createElement('table');
+    table.setAttribute('border', '1');
+
+    // Generate the header row with column numbers
+    const headerCells = '<th></th>' + data[0].map((_, colIndex) => `<th>${colIndex + 1}</th>`).join('');
+    const headerRow = `<tr>${headerCells}</tr>`;
+
+    // Generate the data rows
+    const dataRows = data.map((rowData, rowIndex) => 
+        `<tr><th>${rowIndex + 1}</th>${rowData.map(cellData => `<td>${cellData}</td>`).join('')}</tr>`
+    ).join('');
+
+    // Combine header and data rows and set as innerHTML
+    table.innerHTML = headerRow + dataRows;
+
+    return table;
+}
+
+
+/* full solve without generating 2d array
+let weightedAVG: number[] = [];
+for(let col = 0; col < options; col++){
+    weightedAVG.push(0);
+    for(let row = 0; row < options; row++){
+        let combo = new Combination(options, row+1, col+1);
+        weightedAVG[col] += combo.findEV() * (1/options);
+    }
+}
+console.log(weightedAVG);*/

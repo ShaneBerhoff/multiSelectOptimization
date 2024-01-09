@@ -9,7 +9,7 @@ export class Combination {
         this.correctAns = correctAns;
     }
 
-    // Finds the expected value of the combination
+    // Finds the expected value of all combinations
     public findEV(): number {
         let totalScore: number = 0.0;
         // Loop through possible correct guesses
