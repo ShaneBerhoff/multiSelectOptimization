@@ -54,8 +54,9 @@ document.getElementById('solverForm')?.addEventListener('submit', function(event
     EVP.innerText = `Expected EV: ${combination.findEV()}`;
     resultDiv.appendChild(EVP);
 
-
-    resultDiv.appendChild(generateTable(totalEV(options)));
+    const totalEV2D = totalEV(options);
+    resultDiv.appendChild(generateTable(totalEV2D));
+    console.log(weightedAVG(totalEV2D));
 
 });
 
@@ -91,14 +92,15 @@ function generateTable(data: number[][]): HTMLTableElement {
     return table;
 }
 
+//Gets weighted average from 2d array based an an arr of probabilites (defaults to even distrabution)
+function weightedAVG(data: number[][], prob: number[] = Array(data.length).fill(1 / data.length)): number[] {
+    if(data.length != prob.length){return [];}
 
-/* full solve without generating 2d array
-let weightedAVG: number[] = [];
-for(let col = 0; col < options; col++){
-    weightedAVG.push(0);
-    for(let row = 0; row < options; row++){
-        let combo = new Combination(options, row+1, col+1);
-        weightedAVG[col] += combo.findEV() * (1/options);
+    const result = new Array(data.length).fill(0);
+    for(let row = 0; row < data.length; row++){
+        for(let col = 0; col < data.length; col++){
+            result[col] += data[row][col] * prob[row]
+        }
     }
+    return result;
 }
-console.log(weightedAVG);*/
