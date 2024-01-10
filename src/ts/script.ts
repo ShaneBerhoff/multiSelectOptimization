@@ -1,64 +1,89 @@
 import { Combination } from "./solver.js";
 
-const optionsSliderIn = document.getElementById("options") as HTMLInputElement;
-const optionsSliderOut = document.getElementById("optionsValue") as HTMLElement;
-const correctAnsSliderIn = document.getElementById("correctAns") as HTMLInputElement;
-const correctAnsSliderOut = document.getElementById("correctAnsValue") as HTMLElement;
-const guessesSliderIn = document.getElementById("guesses") as HTMLInputElement;
-const guessesSliderOut = document.getElementById("guessesValue") as HTMLElement;
+class SingleSolver {
+    // Define necessary properties
+    optionsSliderIn: HTMLInputElement;
+    optionsSliderOut: HTMLElement;
+    correctAnsSliderIn: HTMLInputElement;
+    correctAnsSliderOut: HTMLElement;
+    guessesSliderIn: HTMLInputElement;
+    guessesSliderOut: HTMLElement;
+    form: HTMLFormElement;
 
-//Adjusts options slider and max values of correctAns/guesses
-optionsSliderIn.oninput = () => {
-    const n = optionsSliderIn.value;
-    optionsSliderOut.innerHTML = n;
-    correctAnsSliderIn.max = n;
-    correctAnsSliderOut.innerHTML = correctAnsSliderIn.value;
-    guessesSliderIn.max = n;
-    guessesSliderOut.innerHTML = guessesSliderIn.value;
+    constructor() {
+        // Initialize elements
+        this.optionsSliderIn = document.getElementById("options") as HTMLInputElement;
+        this.optionsSliderOut = document.getElementById("optionsValue") as HTMLElement;
+        this.correctAnsSliderIn = document.getElementById("correctAns") as HTMLInputElement;
+        this.correctAnsSliderOut = document.getElementById("correctAnsValue") as HTMLElement;
+        this.guessesSliderIn = document.getElementById("guesses") as HTMLInputElement;
+        this.guessesSliderOut = document.getElementById("guessesValue") as HTMLElement;
+        this.form = document.getElementById("singleSolveForm") as HTMLFormElement;
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    addEventListeners() {
+        this.optionsSliderIn.oninput = () => {
+            const n = this.optionsSliderIn.value;
+            this.optionsSliderOut.innerHTML = n;
+            this.correctAnsSliderIn.max = n;
+            this.correctAnsSliderOut.innerHTML = this.correctAnsSliderIn.value;
+            this.guessesSliderIn.max = n;
+            this.guessesSliderOut.innerHTML = this.guessesSliderIn.value;
+        };
+        this.correctAnsSliderIn.oninput = () => { this.correctAnsSliderOut.innerHTML = this.correctAnsSliderIn.value; };
+        this.guessesSliderIn.oninput = () => { this.guessesSliderOut.innerHTML = this.guessesSliderIn.value; };
+        this.form.addEventListener('submit', this.handleSubmit);
+    }
+
+    removeEventListeners() {
+        this.optionsSliderIn.oninput = null;
+        this.correctAnsSliderIn.oninput = null;
+        this.guessesSliderIn.oninput = null;
+        this.form.removeEventListener('submit', this.handleSubmit);
+    }
+
+    handleSubmit(event: Event) {
+        event.preventDefault();
+        
+        // Get numbers and implement the logic for solving the problem
+        const options = parseInt(this.optionsSliderIn.value);
+        const correctAns = parseInt(this.correctAnsSliderIn.value);
+        const guesses = parseInt(this.guessesSliderIn.value);
+
+        // Set result
+        const resultDiv = document.getElementById('result') as HTMLDivElement;
+        
+        resultDiv.innerHTML = '';
+    
+        // EV Section
+        const combination = new Combination(options, correctAns, guesses);
+        const EVP = document.createElement('p');
+        EVP.innerText = `Expected EV: ${combination.findEV()}`;
+        resultDiv.appendChild(EVP);
+    }
 }
 
-//Adjusts correctAns/guesses slider
-correctAnsSliderIn.oninput = () => {correctAnsSliderOut.innerHTML = correctAnsSliderIn.value;}
-guessesSliderIn.oninput = () => {guessesSliderOut.innerHTML = guessesSliderIn.value;}
+const singleSolver = new SingleSolver();
+// Change solver type based on dropdown
+const dropdown = document.getElementById('dropdown') as HTMLSelectElement;
+const singleSolveDiv = document.getElementById('singleSolve') as HTMLDivElement;
+const fullSolveDiv = document.getElementById('fullSolve') as HTMLDivElement;
+const result = document.getElementById('result') as HTMLDivElement;
 
- 
-//form submission
-document.getElementById('solverForm')?.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-
-    // Get numbers
-    const options = parseInt(optionsSliderIn.value);
-    const correctAns = parseInt(correctAnsSliderIn.value);
-    const guesses = parseInt(guessesSliderIn.value);
-    
-
-    // Set result
-    const resultDiv = document.getElementById('result') as HTMLDivElement;
-    
-    resultDiv.innerHTML = '';
-
-    // Create sections for questions/correct/guesses
-    const optionsP = document.createElement('p');
-    const correctAnsP = document.createElement('p');
-    const guessesP = document.createElement('p');
-    optionsP.innerText = `Number of options: ${options}`;
-    correctAnsP.innerText = `Number of correct answers: ${correctAns}`;
-    guessesP.innerText = `Number of guesses: ${guesses}`;
-    resultDiv.appendChild(optionsP);
-    resultDiv.appendChild(correctAnsP);
-    resultDiv.appendChild(guessesP);
-
-    // EV Section
-    const combination = new Combination(options, correctAns, guesses);
-    const EVP = document.createElement('p');
-    EVP.innerText = `Expected EV: ${combination.findEV()}`;
-    resultDiv.appendChild(EVP);
-
-    const totalEV2D = totalEV(options);
-    resultDiv.appendChild(generateTable(totalEV2D));
-    console.log(weightedAVG(totalEV2D));
-
+dropdown.addEventListener('change', () =>{
+    if(dropdown.value === 'singleSolve'){
+        singleSolver.addEventListeners();
+        singleSolveDiv.style.display = 'block';
+        fullSolveDiv.style.display = 'none';
+    } else if (dropdown.value === 'fullSolve'){
+        singleSolver.removeEventListeners();
+        singleSolveDiv.style.display = 'none';
+        fullSolveDiv.style.display = 'block';
+    }
+    result.innerHTML = '';
 });
+dropdown.dispatchEvent(new Event('change'));
 
 //Creates a 2d array of EV based on number of options for all possible correctAns and guesses
 function totalEV(options: number): number[][] {
