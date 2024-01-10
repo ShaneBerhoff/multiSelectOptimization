@@ -99,10 +99,17 @@ class FullSolver {
         
         resultDiv.innerHTML = '';
         
-        resultDiv.appendChild(this.generateTable(this.totalEV(options)));
+        const EV2D = this.totalEV(options);
+        resultDiv.appendChild(this.generateTable(EV2D));
+
+        const weightedAverageP = document.createElement('p');
+        weightedAverageP.innerText = `Weighted Average\n${this.weightedAVG(EV2D).map(num => num.toFixed(2)).toString()}`;
+        resultDiv.appendChild(weightedAverageP);
     }
 
     //Creates a 2d array of EV based on number of options for all possible correctAns and guesses
+    //rows: number of correct answers
+    //cols: guesses by player
     totalEV(options: number): number[][] {
         const totalEV: number[][] = Array.from({ length: options }, () => Array(options).fill(0));
         for(let row = 1; row <= options; row++){
@@ -133,6 +140,18 @@ class FullSolver {
         return table;
     }
 
+    //Gets weighted average from 2d array based an an arr of probabilites (defaults to even distrabution)
+    weightedAVG(data: number[][], prob: number[] = Array(data.length).fill(1 / data.length)): number[] {
+        if(data.length != prob.length){return [];}
+
+        const result = new Array(data.length).fill(0);
+        for(let row = 0; row < data.length; row++){
+            for(let col = 0; col < data.length; col++){
+                result[col] += data[row][col] * prob[row]
+            }
+        }
+        return result;
+    }
 }
 
 const singleSolver = new SingleSolver();
@@ -160,15 +179,3 @@ dropdown.addEventListener('change', () =>{
 dropdown.dispatchEvent(new Event('change'));
 
 
-//Gets weighted average from 2d array based an an arr of probabilites (defaults to even distrabution)
-function weightedAVG(data: number[][], prob: number[] = Array(data.length).fill(1 / data.length)): number[] {
-    if(data.length != prob.length){return [];}
-
-    const result = new Array(data.length).fill(0);
-    for(let row = 0; row < data.length; row++){
-        for(let col = 0; col < data.length; col++){
-            result[col] += data[row][col] * prob[row]
-        }
-    }
-    return result;
-}
