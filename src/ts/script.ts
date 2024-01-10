@@ -64,7 +64,79 @@ class SingleSolver {
     }
 }
 
+class FullSolver {
+    // Define necessary properties
+    optionsSliderIn: HTMLInputElement;
+    optionsSliderOut: HTMLElement;
+    form: HTMLFormElement;
+
+    constructor() {
+        // Initialize elements
+        this.optionsSliderIn = document.getElementById("fullSolveOptions") as HTMLInputElement;
+        this.optionsSliderOut = document.getElementById("fullSolveOptionsValue") as HTMLElement;
+        this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+
+    addEventListeners() {
+        this.optionsSliderIn.oninput = () => { this.optionsSliderOut.innerHTML = this.optionsSliderIn.value; };
+        this.form.addEventListener('submit', this.handleSubmit);
+    }
+
+    removeEventListeners() {
+        this.optionsSliderIn.oninput = null;
+        this.form.removeEventListener('submit', this.handleSubmit);
+    }
+
+    handleSubmit(event: Event) {
+        event.preventDefault();
+        
+        // Get numbers and implement the logic for solving the problem
+        const options = parseInt(this.optionsSliderIn.value);
+
+        // Set result
+        const resultDiv = document.getElementById('result') as HTMLDivElement;
+        
+        resultDiv.innerHTML = '';
+        
+        resultDiv.appendChild(this.generateTable(this.totalEV(options)));
+    }
+
+    //Creates a 2d array of EV based on number of options for all possible correctAns and guesses
+    totalEV(options: number): number[][] {
+        const totalEV: number[][] = Array.from({ length: options }, () => Array(options).fill(0));
+        for(let row = 1; row <= options; row++){
+            for(let col = 1; col <= options; col++){
+                const combo = new Combination(options, row, col);
+                totalEV[row-1][col-1] = combo.findEV();
+            }
+        }
+        return totalEV;
+    }
+    //Turns a 2d array into a table
+    generateTable(data: number[][]): HTMLTableElement {
+        const table = document.createElement('table');
+        table.setAttribute('border', '1');
+
+        // Generate the header row with column numbers
+        const headerCells = '<th></th>' + data[0].map((_, colIndex) => `<th>${colIndex + 1}</th>`).join('');
+        const headerRow = `<tr>${headerCells}</tr>`;
+
+        // Generate the data rows
+        const dataRows = data.map((rowData, rowIndex) => 
+            `<tr><th>${rowIndex + 1}</th>${rowData.map(cellData => `<td>${cellData}</td>`).join('')}</tr>`
+        ).join('');
+
+        // Combine header and data rows and set as innerHTML
+        table.innerHTML = headerRow + dataRows;
+
+        return table;
+    }
+
+}
+
 const singleSolver = new SingleSolver();
+const fullSolver = new FullSolver();
 // Change solver type based on dropdown
 const dropdown = document.getElementById('dropdown') as HTMLSelectElement;
 const singleSolveDiv = document.getElementById('singleSolve') as HTMLDivElement;
@@ -74,10 +146,12 @@ const result = document.getElementById('result') as HTMLDivElement;
 dropdown.addEventListener('change', () =>{
     if(dropdown.value === 'singleSolve'){
         singleSolver.addEventListeners();
+        fullSolver.removeEventListeners();
         singleSolveDiv.style.display = 'block';
         fullSolveDiv.style.display = 'none';
     } else if (dropdown.value === 'fullSolve'){
         singleSolver.removeEventListeners();
+        fullSolver.addEventListeners();
         singleSolveDiv.style.display = 'none';
         fullSolveDiv.style.display = 'block';
     }
@@ -85,37 +159,6 @@ dropdown.addEventListener('change', () =>{
 });
 dropdown.dispatchEvent(new Event('change'));
 
-//Creates a 2d array of EV based on number of options for all possible correctAns and guesses
-function totalEV(options: number): number[][] {
-    const totalEV: number[][] = Array.from({ length: options }, () => Array(options).fill(0));
-    for(let row = 1; row <= options; row++){
-        for(let col = 1; col <= options; col++){
-            const combo = new Combination(options, row, col);
-            totalEV[row-1][col-1] = combo.findEV();
-        }
-    }
-    return totalEV;
-}
-
-//Turns a 2d array into a table
-function generateTable(data: number[][]): HTMLTableElement {
-    const table = document.createElement('table');
-    table.setAttribute('border', '1');
-
-    // Generate the header row with column numbers
-    const headerCells = '<th></th>' + data[0].map((_, colIndex) => `<th>${colIndex + 1}</th>`).join('');
-    const headerRow = `<tr>${headerCells}</tr>`;
-
-    // Generate the data rows
-    const dataRows = data.map((rowData, rowIndex) => 
-        `<tr><th>${rowIndex + 1}</th>${rowData.map(cellData => `<td>${cellData}</td>`).join('')}</tr>`
-    ).join('');
-
-    // Combine header and data rows and set as innerHTML
-    table.innerHTML = headerRow + dataRows;
-
-    return table;
-}
 
 //Gets weighted average from 2d array based an an arr of probabilites (defaults to even distrabution)
 function weightedAVG(data: number[][], prob: number[] = Array(data.length).fill(1 / data.length)): number[] {
