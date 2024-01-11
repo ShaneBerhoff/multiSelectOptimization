@@ -36,7 +36,13 @@
                 <label for="fullSolveOptions">How many options does the question have?</label>
                 <input type="range" id="fullSolveOptions" min="1" max="20" value="5">
                 <p>Options: <span id="fullSolveOptionsValue">5</span></p>
-                <br>
+                
+                <label>
+                    Advanced probability distribution?
+                    <input type="checkbox" id="advancedProb" style="display: inline; width: auto; margin: 0 5px;">
+                </label>
+                <input type="text" id="probabilities" placeholder="comma separated values: .3,.4,.3" style="display: none;">
+
                 <p>This solves for all possible combinations of correct and guesses.</p>
                 <button type="submit">Full Calculate</button>
             </form>
