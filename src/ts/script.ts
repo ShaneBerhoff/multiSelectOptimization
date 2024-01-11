@@ -58,7 +58,7 @@ class SingleSolver {
     
         // EV Section
         const combination = new Combination(options, correctAns, guesses);
-        const EVP = document.createElement('p');
+        const EVP = document.createElement('h2');
         EVP.innerText = `Expected EV: ${combination.findEV()}`;
         resultDiv.appendChild(EVP);
     }
@@ -68,6 +68,8 @@ class FullSolver {
     // Define necessary properties
     optionsSliderIn: HTMLInputElement;
     optionsSliderOut: HTMLElement;
+    showEVTable: HTMLInputElement;
+    showWeightedAVG: HTMLInputElement;
     advancedProb: HTMLInputElement;
     probabilities: HTMLInputElement;
     form: HTMLFormElement;
@@ -76,6 +78,8 @@ class FullSolver {
         // Initialize elements
         this.optionsSliderIn = document.getElementById("fullSolveOptions") as HTMLInputElement;
         this.optionsSliderOut = document.getElementById("fullSolveOptionsValue") as HTMLElement;
+        this.showEVTable = document.getElementById("EVTable") as HTMLInputElement;
+        this.showWeightedAVG = document.getElementById("weightedAVG") as HTMLInputElement;
         this.advancedProb = document.getElementById("advancedProb") as HTMLInputElement;
         this.probabilities = document.getElementById("probabilities") as HTMLInputElement;
         this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
@@ -85,7 +89,7 @@ class FullSolver {
     addEventListeners() {
         this.optionsSliderIn.oninput = () => { this.optionsSliderOut.innerHTML = this.optionsSliderIn.value; };
         this.advancedProb.oninput = () => {
-            if (this.advancedProb.checked) this.probabilities.blur();
+            if (this.advancedProb.checked) this.probabilities.style.borderStyle = 'none';
             this.probabilities.style.display = this.advancedProb.checked ? 'block' : 'none';
         };        
         this.form.addEventListener('submit', this.handleSubmit);
@@ -108,28 +112,43 @@ class FullSolver {
         
         resultDiv.innerHTML = '';
 
+        //TODO create a better system for entering prob distrabution and validate that it equals 1
         //Validate probabilities if selected
         let prob: number[] | undefined;
         if(this.advancedProb.checked){
             prob = this.probabilities.value.split(',').map(n => parseFloat(n.trim()));
-            if(prob.length !== options || prob.some(isNaN) || prob.reduce((a,b)=>a+b,0)!=1){
+            if(prob.length !== options || prob.some(isNaN)){
                 resultDiv.innerText = 'Invalid probabilities input.';
                 return;
             }
         } else {prob = undefined;}
 
-        resultDiv.appendChild(document.createElement('h2')).innerText = "EV Table";
-        resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of correct answers and each column is the number of guesses.";
-
         //Create and add full EV table
         const totalEV = this.totalEV(options);
-        const EVTable = resultDiv.appendChild(this.generateTable(totalEV));
+        if(this.showEVTable.checked){
+            resultDiv.appendChild(document.createElement('h2')).innerText = "EV Table";
+            resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of correct answers and each column is the number of guesses.";
+            const EVTable = resultDiv.appendChild(this.generateTable(totalEV));
+        }
 
+        const weightedAVG = this.weightedAVG(totalEV,prob);
         //Create and add weighted averages table based on prob distrabution
-        const WATable = resultDiv.appendChild(document.createElement("table"));
-        WATable.insertRow(-1).insertCell(0).outerHTML = `<th colspan="${options}">Weighted Average</th>`;
-        const weightedAVG = this.weightedAVG(totalEV,prob).map(num => num.toFixed(2));
-        WATable.insertRow(-1).innerHTML = weightedAVG.map(item => `<td>${item}</td>`).join('');
+        if(this.showWeightedAVG.checked){
+            resultDiv.appendChild(document.createElement('h2')).innerText = "Weighted Averages";
+            resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of each number of guesses based on a weighted average on the probability of number of correct answers.";
+            const WATable = resultDiv.appendChild(document.createElement("table"));
+            WATable.insertRow(-1).insertCell(0).outerHTML = `<th colspan="${options}">Weighted Average</th>`;
+            WATable.insertRow(-1).innerHTML = weightedAVG.map(item => `<td>${item.toFixed(2)}</td>`).join('');
+            //As a percentage
+            WATable.insertRow(-1).insertCell(0).outerHTML = `<th colspan="${options}">As A Percentage</th>`;
+            WATable.insertRow(-1).innerHTML = weightedAVG.map(item => `<td>${(item*100).toFixed(2)}%</td>`).join('');
+        }
+
+        //Most Optimal
+        resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${
+            weightedAVG.reduce((maxIdx, currentVal, currentIdx) => 
+            currentVal > weightedAVG[maxIdx] ? currentIdx : maxIdx, 0) + 1
+        } guesses`;
     }
 
     //Creates a 2d array of EV based on number of options for all possible correctAns and guesses

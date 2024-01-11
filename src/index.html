@@ -8,12 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Solver</h1>
+        <h1>Multi-Select Optimization</h1>
         <select id="dropdown">
             <option value="singleSolve">Basic Solve</option>
             <option value="fullSolve">Full Solve</option>
         </select>
         <div id="singleSolve">
+            <p>Solves for the expected amount of points you would get for a question based on a certain amount of options, correct answers, and options guessed.</p>
             <form id="singleSolveForm">
                 <label for="options">How many options does the question have?</label>
                 <input type="range" id="options" min="1" max="20" value="5">
@@ -32,18 +33,28 @@
             </form>
         </div>
         <div id="fullSolve" style="display: none;">
+            <p>Solves the expected points for all possible combinations of number of correct answers and options guessed. Used to determine the number of guesses with the highest expected value in points.</p>
             <form id="fullSolveForm">
                 <label for="fullSolveOptions">How many options does the question have?</label>
                 <input type="range" id="fullSolveOptions" min="1" max="20" value="5">
                 <p>Options: <span id="fullSolveOptionsValue">5</span></p>
                 
                 <label>
+                    Show full EV table?
+                    <input type="checkbox" id="EVTable" style="display: inline; width: auto; margin: 0 5px;">
+                </label>
+
+                <label>
+                    Show weighted averages?
+                    <input type="checkbox" id="weightedAVG" style="display: inline; width: auto; margin: 0 5px;">
+                </label>
+
+                <label>
                     Advanced probability distribution?
                     <input type="checkbox" id="advancedProb" style="display: inline; width: auto; margin: 0 5px;">
                 </label>
                 <input type="text" id="probabilities" placeholder="comma separated values: .3,.4,.3" style="display: none;">
 
-                <p>This solves for all possible combinations of correct and guesses.</p>
                 <button type="submit">Full Calculate</button>
             </form>
         </div>
