@@ -20,6 +20,12 @@ input, button {
     width: 200px;
 }
 
+input[name = "probabilityDist"] {
+    display: inline;
+    width: auto; 
+    margin: 0 5px;
+}
+
 #result {
     margin-top: 20px;
 }

@@ -70,7 +70,8 @@ class FullSolver {
     optionsSliderOut: HTMLElement;
     showEVTable: HTMLInputElement;
     showWeightedAVG: HTMLInputElement;
-    advancedProb: HTMLInputElement;
+    showAdvancedProb: HTMLInputElement;
+    probabilityDist: HTMLDivElement;
     probabilities: HTMLInputElement;
     form: HTMLFormElement;
 
@@ -80,7 +81,8 @@ class FullSolver {
         this.optionsSliderOut = document.getElementById("fullSolveOptionsValue") as HTMLElement;
         this.showEVTable = document.getElementById("EVTable") as HTMLInputElement;
         this.showWeightedAVG = document.getElementById("weightedAVG") as HTMLInputElement;
-        this.advancedProb = document.getElementById("advancedProb") as HTMLInputElement;
+        this.showAdvancedProb = document.getElementById("advancedProb") as HTMLInputElement;
+        this.probabilityDist = document.getElementById("probabilityDist") as HTMLDivElement;
         this.probabilities = document.getElementById("probabilities") as HTMLInputElement;
         this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -88,16 +90,15 @@ class FullSolver {
 
     addEventListeners() {
         this.optionsSliderIn.oninput = () => { this.optionsSliderOut.innerHTML = this.optionsSliderIn.value; };
-        this.advancedProb.oninput = () => {
-            if (this.advancedProb.checked) this.probabilities.style.borderStyle = 'none';
-            this.probabilities.style.display = this.advancedProb.checked ? 'block' : 'none';
-        };        
+        this.showAdvancedProb.oninput = () => {
+            if (this.showAdvancedProb.checked) this.probabilities.blur();
+            this.probabilityDist.style.display = this.showAdvancedProb.checked ? 'block' : 'none';}      
         this.form.addEventListener('submit', this.handleSubmit);
     }
 
     removeEventListeners() {
         this.optionsSliderIn.oninput = null;
-        this.advancedProb.oninput = null;
+        this.showAdvancedProb.oninput = null;
         this.form.removeEventListener('submit', this.handleSubmit);
     }
 
@@ -113,9 +114,13 @@ class FullSolver {
         resultDiv.innerHTML = '';
 
         //TODO create a better system for entering prob distrabution and validate that it equals 1
+        //TODO create better full switchase for prob dist that give final dist
+
+        //Determine which prob dist selected
+        const selectedDist = (this.probabilityDist.querySelector('input[name="probabilityDist"]:checked') as HTMLInputElement).value;        
         //Validate probabilities if selected
         let prob: number[] | undefined;
-        if(this.advancedProb.checked){
+        if(this.showAdvancedProb.checked && selectedDist == "customDist"){
             prob = this.probabilities.value.split(',').map(n => parseFloat(n.trim()));
             if(prob.length !== options || prob.some(isNaN)){
                 resultDiv.innerText = 'Invalid probabilities input.';

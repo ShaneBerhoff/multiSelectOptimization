@@ -53,8 +53,35 @@
                     Advanced probability distribution?
                     <input type="checkbox" id="advancedProb" style="display: inline; width: auto; margin: 0 5px;">
                 </label>
-                <input type="text" id="probabilities" placeholder="comma separated values: .3,.4,.3" style="display: none;">
 
+                <div id="probabilityDist" style="display: none;">
+                    <label>
+                        <input type="radio" id="uniformDist" name="probabilityDist" value="uniformDist" checked>
+                        Uniform Distribution
+                    </label>
+                    
+                    <label>
+                        <input type="radio" id="degenDist" name="probabilityDist" value="degenDist">
+                        Degenerate Distribution
+                        <input type="number" id="degenDistNum" min="1" max="5" value="1">
+                    </label>
+                    <label>
+                        <input type="radio" id="binomialDist" name="probabilityDist" value="binomialDist">
+                        Binomial Distribution
+                    </label>
+                    <label>
+                        <input type="radio" id="benfordDist" name="probabilityDist" value="benfordDist">
+                        Benford's Law Distribution
+                    </label>
+                    <label>
+                        <input type="radio" id="customDist" name="probabilityDist" value="customDist">
+                        Custom Distribution
+                        <input type="text" id="probabilities" placeholder="comma separated values: .3,.4,.3">
+                    </label>
+                </div>
+
+                <br>
+                
                 <button type="submit">Full Calculate</button>
             </form>
         </div>
