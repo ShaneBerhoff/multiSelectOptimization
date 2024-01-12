@@ -71,8 +71,9 @@ class FullSolver {
     showEVTable: HTMLInputElement;
     showWeightedAVG: HTMLInputElement;
     showAdvancedProb: HTMLInputElement;
-    probabilityDist: HTMLDivElement;
-    probabilities: HTMLInputElement;
+    probabilityDiv: HTMLDivElement;
+    customProbabilities: HTMLInputElement;
+    degenProb: HTMLInputElement;
     form: HTMLFormElement;
 
     constructor() {
@@ -82,17 +83,22 @@ class FullSolver {
         this.showEVTable = document.getElementById("EVTable") as HTMLInputElement;
         this.showWeightedAVG = document.getElementById("weightedAVG") as HTMLInputElement;
         this.showAdvancedProb = document.getElementById("advancedProb") as HTMLInputElement;
-        this.probabilityDist = document.getElementById("probabilityDist") as HTMLDivElement;
-        this.probabilities = document.getElementById("probabilities") as HTMLInputElement;
+        this.probabilityDiv = document.getElementById("probabilityDist") as HTMLDivElement;
+        this.customProbabilities = document.getElementById("probabilities") as HTMLInputElement;
+        this.degenProb = document.getElementById("degenDistNum") as HTMLInputElement;
         this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
         this.handleSubmit = this.handleSubmit.bind(this);
     }
 
     addEventListeners() {
-        this.optionsSliderIn.oninput = () => { this.optionsSliderOut.innerHTML = this.optionsSliderIn.value; };
+        this.optionsSliderIn.oninput = () => { 
+            const n = this.optionsSliderIn.value
+            this.optionsSliderOut.innerHTML = n;
+            this.degenProb.max = n;
+        }
         this.showAdvancedProb.oninput = () => {
-            if (this.showAdvancedProb.checked) this.probabilities.blur();
-            this.probabilityDist.style.display = this.showAdvancedProb.checked ? 'block' : 'none';}      
+            if (this.showAdvancedProb.checked) this.customProbabilities.blur();
+            this.probabilityDiv.style.display = this.showAdvancedProb.checked ? 'block' : 'none';}      
         this.form.addEventListener('submit', this.handleSubmit);
     }
 
@@ -113,20 +119,12 @@ class FullSolver {
         
         resultDiv.innerHTML = '';
 
-        //TODO create a better system for entering prob distrabution and validate that it equals 1
-        //TODO create better full switchase for prob dist that give final dist
-
-        //Determine which prob dist selected
-        const selectedDist = (this.probabilityDist.querySelector('input[name="probabilityDist"]:checked') as HTMLInputElement).value;        
-        //Validate probabilities if selected
-        let prob: number[] | undefined;
-        if(this.showAdvancedProb.checked && selectedDist == "customDist"){
-            prob = this.probabilities.value.split(',').map(n => parseFloat(n.trim()));
-            if(prob.length !== options || prob.some(isNaN)){
-                resultDiv.innerText = 'Invalid probabilities input.';
-                return;
-            }
-        } else {prob = undefined;}
+        //get prob dist or show issue
+        const prob: number[] | null = this.generateProbDist(options);
+        if(prob==null){
+            resultDiv.innerText = "Invalid probabilities input."
+            return;
+        }
 
         //Create and add full EV table
         const totalEV = this.totalEV(options);
@@ -190,7 +188,7 @@ class FullSolver {
     }
 
     //Gets weighted average from 2d array based an an arr of probabilites (defaults to even distrabution)
-    weightedAVG(data: number[][], prob: number[] = Array(data.length).fill(1 / data.length)): number[] {
+    weightedAVG(data: number[][], prob: number[]): number[] {
         if(data.length != prob.length){return [];}
 
         const result = new Array(data.length).fill(0);
@@ -200,6 +198,36 @@ class FullSolver {
             }
         }
         return result;
+    }
+
+    //Gives prob dist as an arr based on selection or null if issue
+    generateProbDist(options: number): number[] | null {
+        let selectedDist: string;
+        //If not advanced default to uniform
+        if(!this.showAdvancedProb.checked){
+            selectedDist = "uniformDist"
+        }else{ //Determine which prob dist selected
+            selectedDist = (this.probabilityDiv.querySelector('input[name="probabilityDist"]:checked') as HTMLInputElement).value;
+        }
+        
+        //produces distribution
+        let result: number[];
+        switch(selectedDist){
+            case "uniformDist":
+                return Array(options).fill(1 / options);
+            case "degenDist":
+                result = Array(options).fill(0);
+                result[parseInt((document.getElementById("degenDistNum") as HTMLInputElement).value)-1] = 1;
+                return result;
+            case "customDist":
+                result = this.customProbabilities.value.split(',').map(n => parseFloat(n.trim()));
+                if(result.length !== options || result.some(isNaN)){ //TODO check that prob equals 1
+                    return null;
+                }
+                return result;
+            default:
+                return null;
+        }
     }
 }
 
