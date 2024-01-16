@@ -50,34 +50,21 @@
                 </label>
 
                 <label>
-                    Advanced probability distribution?
-                    <input type="checkbox" id="advancedProb" style="display: inline; width: auto; margin: 0 5px;">
+                    Probability Distribution:
+                    <select id="probabilityDist" style="display: inline; width: auto; margin: 0 5px;">
+                        <option value="uniformDist">Uniform Distribution</option>
+                        <option value="degenDist">Degenerate Distribution</option>
+                        <option value="benfordDist">Benford's Law Distribution</option>
+                        <option value="customDist">Custom Distribution</option>
+                    </select>
                 </label>
-
-                <div id="probabilityDist" style="display: none;">
-                    <label>
-                        <input type="radio" id="uniformDist" name="probabilityDist" value="uniformDist" checked>
-                        Uniform Distribution
-                    </label>
-                    
-                    <label>
-                        <input type="radio" id="degenDist" name="probabilityDist" value="degenDist">
-                        Degenerate Distribution
-                        <input type="number" id="degenDistNum" min="1" max="5" value="1">
-                    </label>
-                    <label>
-                        <input type="radio" id="binomialDist" name="probabilityDist" value="binomialDist">
-                        Binomial Distribution
-                    </label>
-                    <label>
-                        <input type="radio" id="benfordDist" name="probabilityDist" value="benfordDist">
-                        Benford's Law Distribution
-                    </label>
-                    <label>
-                        <input type="radio" id="customDist" name="probabilityDist" value="customDist">
-                        Custom Distribution
-                        <input type="text" id="probabilities" placeholder="comma separated values: .3,.4,.3">
-                    </label>
+                <div id="uniformDist"></div>
+                <div id="degenDist" style="display: none;">
+                    <input type="number" id="degenDistNum" min="1" max="5" value="1">
+                </div>
+                <div id="benfordDist" style="display: none;"></div>
+                <div id="customDist" style="display: none;">
+                    <input type="text" id="customProbs" placeholder="comma separated values: .3,.4,.3">
                 </div>
 
                 <br>

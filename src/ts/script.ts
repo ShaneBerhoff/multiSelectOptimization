@@ -70,11 +70,15 @@ class FullSolver {
     optionsSliderOut: HTMLElement;
     showEVTable: HTMLInputElement;
     showWeightedAVG: HTMLInputElement;
-    showAdvancedProb: HTMLInputElement;
-    probabilityDiv: HTMLDivElement;
-    customProbabilities: HTMLInputElement;
-    degenProb: HTMLInputElement;
+    probabilityDist: HTMLInputElement;
+    uniformDist: HTMLDivElement;
+    degenDist: HTMLDivElement;
+    benfordDist: HTMLDivElement;
+    customDist: HTMLDivElement;
+    degenDistNum: HTMLInputElement;
+    customProbs: HTMLInputElement;
     form: HTMLFormElement;
+    resultDiv: HTMLDivElement;
 
     constructor() {
         // Initialize elements
@@ -82,30 +86,45 @@ class FullSolver {
         this.optionsSliderOut = document.getElementById("fullSolveOptionsValue") as HTMLElement;
         this.showEVTable = document.getElementById("EVTable") as HTMLInputElement;
         this.showWeightedAVG = document.getElementById("weightedAVG") as HTMLInputElement;
-        this.showAdvancedProb = document.getElementById("advancedProb") as HTMLInputElement;
-        this.probabilityDiv = document.getElementById("probabilityDist") as HTMLDivElement;
-        this.customProbabilities = document.getElementById("probabilities") as HTMLInputElement;
-        this.degenProb = document.getElementById("degenDistNum") as HTMLInputElement;
+        // Probability distrabutions
+        this.probabilityDist = document.getElementById("probabilityDist") as HTMLInputElement;
+        this.uniformDist = document.getElementById("uniformDist") as HTMLDivElement;
+        this.degenDist = document.getElementById("degenDist") as HTMLDivElement;
+        this.benfordDist = document.getElementById("benfordDist") as HTMLDivElement;
+        this.customDist = document.getElementById("customDist") as HTMLDivElement;
+        this.degenDistNum = document.getElementById("degenDistNum") as HTMLInputElement;
+        this.customProbs = document.getElementById("probabilities") as HTMLInputElement;
+        // Form
         this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleProbDivs = this.handleProbDivs.bind(this);
+        // Result
+        this.resultDiv = document.getElementById('result') as HTMLDivElement;
     }
 
     addEventListeners() {
         this.optionsSliderIn.oninput = () => { 
             const n = this.optionsSliderIn.value
             this.optionsSliderOut.innerHTML = n;
-            this.degenProb.max = n;
+            this.degenDistNum.max = n;
         }
-        this.showAdvancedProb.oninput = () => {
-            if (this.showAdvancedProb.checked) this.customProbabilities.blur();
-            this.probabilityDiv.style.display = this.showAdvancedProb.checked ? 'block' : 'none';}      
+        this.probabilityDist.addEventListener('change', this.handleProbDivs);      
         this.form.addEventListener('submit', this.handleSubmit);
     }
 
     removeEventListeners() {
         this.optionsSliderIn.oninput = null;
-        this.showAdvancedProb.oninput = null;
+        this.probabilityDist.removeEventListener('change', this.handleProbDivs);
         this.form.removeEventListener('submit', this.handleSubmit);
+    }
+
+    // Handles the visibility of the different probability distributions
+    handleProbDivs(){
+        const distributions = ['uniformDist', 'degenDist', 'benfordDist', 'customDist'];
+        distributions.forEach(dist => {
+            (this as any)[dist].style.display = dist === this.probabilityDist.value ? 'block' : 'none';
+        });
+        this.resultDiv.innerHTML = '';
     }
 
     handleSubmit(event: Event) {
@@ -115,31 +134,29 @@ class FullSolver {
         const options = parseInt(this.optionsSliderIn.value);
 
         // Set result
-        const resultDiv = document.getElementById('result') as HTMLDivElement;
-        
-        resultDiv.innerHTML = '';
+        this.resultDiv.innerHTML = '';
 
         //get prob dist or show issue
         const prob: number[] | null = this.generateProbDist(options);
         if(prob==null){
-            resultDiv.innerText = "Invalid probabilities input."
+            this.resultDiv.innerText = "Invalid probabilities input."
             return;
         }
 
         //Create and add full EV table
         const totalEV = this.totalEV(options);
         if(this.showEVTable.checked){
-            resultDiv.appendChild(document.createElement('h2')).innerText = "EV Table";
-            resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of correct answers and each column is the number of guesses.";
-            const EVTable = resultDiv.appendChild(this.generateTable(totalEV));
+            this.resultDiv.appendChild(document.createElement('h2')).innerText = "EV Table";
+            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of correct answers and each column is the number of guesses.";
+            const EVTable = this.resultDiv.appendChild(this.generateTable(totalEV));
         }
 
         const weightedAVG = this.weightedAVG(totalEV,prob);
         //Create and add weighted averages table based on prob distrabution
         if(this.showWeightedAVG.checked){
-            resultDiv.appendChild(document.createElement('h2')).innerText = "Weighted Averages";
-            resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of each number of guesses based on a weighted average on the probability of number of correct answers.";
-            const WATable = resultDiv.appendChild(document.createElement("table"));
+            this.resultDiv.appendChild(document.createElement('h2')).innerText = "Weighted Averages";
+            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of each number of guesses based on a weighted average on the probability of number of correct answers.";
+            const WATable = this.resultDiv.appendChild(document.createElement("table"));
             WATable.insertRow(-1).insertCell(0).outerHTML = `<th colspan="${options}">Weighted Average</th>`;
             WATable.insertRow(-1).innerHTML = weightedAVG.map(item => `<td>${item.toFixed(2)}</td>`).join('');
             //As a percentage
@@ -148,7 +165,7 @@ class FullSolver {
         }
 
         //Most Optimal
-        resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${
+        this.resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${
             weightedAVG.reduce((maxIdx, currentVal, currentIdx) => 
             currentVal > weightedAVG[maxIdx] ? currentIdx : maxIdx, 0) + 1
         } guesses`;
@@ -202,13 +219,7 @@ class FullSolver {
 
     //Gives prob dist as an arr based on selection or null if issue
     generateProbDist(options: number): number[] | null {
-        let selectedDist: string;
-        //If not advanced default to uniform
-        if(!this.showAdvancedProb.checked){
-            selectedDist = "uniformDist"
-        }else{ //Determine which prob dist selected
-            selectedDist = (this.probabilityDiv.querySelector('input[name="probabilityDist"]:checked') as HTMLInputElement).value;
-        }
+        const selectedDist: string = this.probabilityDist.value;
         
         //produces distribution
         let result: number[];
@@ -217,10 +228,11 @@ class FullSolver {
                 return Array(options).fill(1 / options);
             case "degenDist":
                 result = Array(options).fill(0);
-                result[parseInt((document.getElementById("degenDistNum") as HTMLInputElement).value)-1] = 1;
+                result[parseInt(this.degenDistNum.value)-1] = 1;
                 return result;
             case "customDist":
-                result = this.customProbabilities.value.split(',').map(n => parseFloat(n.trim()));
+                if(this.customProbs == null){return null;}
+                result = this.customProbs.value.split(',').map(n => parseFloat(n.trim()));
                 if(result.length !== options || result.some(isNaN)){ //TODO check that prob equals 1
                     return null;
                 }
