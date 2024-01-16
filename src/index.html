@@ -48,7 +48,7 @@
                     Show weighted averages?
                     <input type="checkbox" id="weightedAVG" style="display: inline; width: auto; margin: 0 5px;">
                 </label>
-
+                <br>
                 <label>
                     Probability Distribution:
                     <select id="probabilityDist" style="display: inline; width: auto; margin: 0 5px;">
@@ -58,12 +58,19 @@
                         <option value="customDist">Custom Distribution</option>
                     </select>
                 </label>
-                <div id="uniformDist"></div>
+                <div id="uniformDist">
+                    <p>Equal probability of all 1-N correct answers.</p>
+                </div>
                 <div id="degenDist" style="display: none;">
+                    <p>The selected number of correct answers has a probability of 1 and the rest have a probability of 0.</p>
                     <input type="number" id="degenDistNum" min="1" max="5" value="1">
                 </div>
                 <div id="benfordDist" style="display: none;"></div>
                 <div id="customDist" style="display: none;">
+                    <p>Input a custom probability distribution where the position of the probability 
+                        coresponds to the number of correct answers it applies to. For example .3,.4,.3 
+                        sets the probability of 1 correct answer to .3, probability of 2 correct answers 
+                        to .4, and the probability of 3 correct to .3.</p>
                     <input type="text" id="customProbs" placeholder="comma separated values: .3,.4,.3">
                 </div>
 
