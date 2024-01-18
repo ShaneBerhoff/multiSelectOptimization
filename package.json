@@ -8,7 +8,8 @@
     "build-ts": "tsc",
     "copy-html": "ncp src/html dist/html",
     "copy-css": "ncp src/css dist/css",
-    "build": "npm run clean && npm run build-ts && npm run copy-html && npm run copy-css"
+    "copy-img": "ncp src/images dist/images",
+    "build": "npm run clean && npm run build-ts && npm run copy-html && npm run copy-css && npm run copy-img"
   },
   "keywords": [],
   "author": "",
