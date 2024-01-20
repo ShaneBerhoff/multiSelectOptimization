@@ -54,6 +54,7 @@
                     <select id="probabilityDist" style="display: inline; width: auto; margin: 0 5px;">
                         <option value="uniformDist">Uniform Distribution</option>
                         <option value="degenDist">Degenerate Distribution</option>
+                        <option value="normalDist">Discrete Normal Distribution</option>
                         <option value="benfordDist">Benford's Law Distribution</option>
                         <option value="customDist">Custom Distribution</option>
                     </select>
@@ -64,6 +65,15 @@
                 <div id="degenDist" style="display: none;">
                     <p>The selected number of correct answers has a probability of 1 and the rest have a probability of 0.</p>
                     <input type="number" id="degenDistNum" min="1" max="5" value="1">
+                </div>
+                <div id="normalDist" style="display: none;">
+                    <p>Since the possible number of correct answers is discrete this approximates a normal
+                        distrabution about a mean &mu; and a standard deviation &sigma; for the values.
+                    </p>
+                    <label for="normalDistMean">Mean &mu;</label>
+                    <input type="number" id="normalDistMean" min="1" max="5" value="3" step=".01">
+                    <label for="normalDistSTD">Standard Deviation &sigma;</label>
+                    <input type="number" id="normalDistSTD" min="1" max="5" value="1" step=".01">
                 </div>
                 <div id="benfordDist" style="display: none;"></div>
                 <div id="customDist" style="display: none;">

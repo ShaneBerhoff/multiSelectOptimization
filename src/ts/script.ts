@@ -73,9 +73,12 @@ class FullSolver {
     probabilityDist: HTMLInputElement;
     uniformDist: HTMLDivElement;
     degenDist: HTMLDivElement;
+    normalDist: HTMLDivElement;
     benfordDist: HTMLDivElement;
     customDist: HTMLDivElement;
     degenDistNum: HTMLInputElement;
+    normalDistMean: HTMLInputElement;
+    normalDistSTD: HTMLInputElement;
     customProbs: HTMLInputElement;
     form: HTMLFormElement;
     resultDiv: HTMLDivElement;
@@ -90,9 +93,13 @@ class FullSolver {
         this.probabilityDist = document.getElementById("probabilityDist") as HTMLInputElement;
         this.uniformDist = document.getElementById("uniformDist") as HTMLDivElement;
         this.degenDist = document.getElementById("degenDist") as HTMLDivElement;
+        this.normalDist = document.getElementById("normalDist") as HTMLDivElement;
         this.benfordDist = document.getElementById("benfordDist") as HTMLDivElement;
         this.customDist = document.getElementById("customDist") as HTMLDivElement;
+        //inputs
         this.degenDistNum = document.getElementById("degenDistNum") as HTMLInputElement;
+        this.normalDistMean = document.getElementById("normalDistMean") as HTMLInputElement;
+        this.normalDistSTD = document.getElementById("normalDistSTD") as HTMLInputElement;
         this.customProbs = document.getElementById("probabilities") as HTMLInputElement;
         // Form
         this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
@@ -107,6 +114,8 @@ class FullSolver {
             const n = this.optionsSliderIn.value
             this.optionsSliderOut.innerHTML = n;
             this.degenDistNum.max = n;
+            this.normalDistMean.max = n;
+            this.normalDistMean.value = ((parseInt(n)+1)/2).toString();
         }
         this.probabilityDist.addEventListener('change', this.handleProbDivs);      
         this.form.addEventListener('submit', this.handleSubmit);
@@ -120,7 +129,7 @@ class FullSolver {
 
     // Handles the visibility of the different probability distributions
     handleProbDivs(){
-        const distributions = ['uniformDist', 'degenDist', 'benfordDist', 'customDist'];
+        const distributions = ['uniformDist', 'degenDist', 'normalDist', 'benfordDist', 'customDist'];
         distributions.forEach(dist => {
             (this as any)[dist].style.display = dist === this.probabilityDist.value ? 'block' : 'none';
         });
@@ -230,6 +239,13 @@ class FullSolver {
                 result = Array(options).fill(0);
                 result[parseInt(this.degenDistNum.value)-1] = 1;
                 return result;
+            case "normalDist":
+                let mean:number = parseFloat(this.normalDistMean.value);
+                let std:number = parseFloat(this.normalDistSTD.value);
+                result = Array.from({ length: options }, (_, i) => i + 1).map(x => normalPDF(x, mean, std)); //Gets the prob density of each
+                result = result.map(density => density / result.reduce((sum, density) => sum + density, 0)); //normalizes it
+                console.log(result);
+                return result;
             case "customDist":
                 if(this.customProbs == null){return null;}
                 result = this.customProbs.value.split(',').map(n => parseFloat(n.trim()));
@@ -239,6 +255,11 @@ class FullSolver {
                 return result;
             default:
                 return null;
+        }
+
+        function normalPDF(x: number, mean: number, stdDeviation: number): number{
+            return (1 / (stdDeviation * Math.sqrt(2 * Math.PI))) 
+                   * Math.exp(-0.5 * Math.pow((x - mean) / stdDeviation, 2));
         }
     }
 }
