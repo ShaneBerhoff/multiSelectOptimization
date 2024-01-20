@@ -70,6 +70,7 @@ class FullSolver {
     optionsSliderOut: HTMLElement;
     showEVTable: HTMLInputElement;
     showWeightedAVG: HTMLInputElement;
+    showProbDist: HTMLInputElement;
     probabilityDist: HTMLInputElement;
     uniformDist: HTMLDivElement;
     degenDist: HTMLDivElement;
@@ -89,6 +90,7 @@ class FullSolver {
         this.optionsSliderOut = document.getElementById("fullSolveOptionsValue") as HTMLElement;
         this.showEVTable = document.getElementById("EVTable") as HTMLInputElement;
         this.showWeightedAVG = document.getElementById("weightedAVG") as HTMLInputElement;
+        this.showProbDist = document.getElementById("showProbDist") as HTMLInputElement;
         // Probability distrabutions
         this.probabilityDist = document.getElementById("probabilityDist") as HTMLInputElement;
         this.uniformDist = document.getElementById("uniformDist") as HTMLDivElement;
@@ -156,15 +158,26 @@ class FullSolver {
         const totalEV = this.totalEV(options);
         if(this.showEVTable.checked){
             this.resultDiv.appendChild(document.createElement('h2')).innerText = "EV Table";
-            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of options selected and each column is the number of correct answers.";
+            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of every possible combination. Where each row is the number of options selected and each column is the number of correct answers.";
             const EVTable = this.resultDiv.appendChild(this.generateTable(totalEV));
         }
         
-        //Create and add weighted averages table based on prob distrabution
+        //Create and add the probability table
+        if(this.showProbDist.checked){
+            this.resultDiv.appendChild(document.createElement('h2')).innerText = "Probability Distribution";
+            this.resultDiv.appendChild(document.createElement('p')).innerText = "This shows the proability of each number of correct options occuring under the selected distribution.";
+            const probDistTable = this.resultDiv.appendChild(document.createElement("table"));
+            probDistTable.innerHTML = `<tr><th>#</th>${prob.map((_, index) => `<th>${index + 1}</th>`).join('')}</tr>` + `<tr><th>P</th>${prob.map(value => `<td>${value.toFixed(2)}</td>`).join('')}</tr>`;
+            
+        }
+
+        // Calculate weigted averages
         const weightedAVG = this.weightedAVG(totalEV, prob);
         if(this.showWeightedAVG.checked){
             this.resultDiv.appendChild(document.createElement('h2')).innerText = "Weighted Averages";
             this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of each number of options guessed based on a weighted average on the probability distrabution of number of correct answers.";
+            
+            //Create and add weighted averages table based on prob distrabution
             const WATable = this.resultDiv.appendChild(document.createElement("table"));
             WATable.innerHTML += `<tr>
                                     <th>#</th>
