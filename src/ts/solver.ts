@@ -32,7 +32,7 @@ export class Combination {
             // accumulate weighted score
             totalScore += score * probability;
         }
-        return parseFloat(totalScore.toFixed(2));
+        return totalScore;
     }
 
     // Calculates combinations of nCk

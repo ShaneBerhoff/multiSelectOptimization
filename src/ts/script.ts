@@ -156,55 +156,63 @@ class FullSolver {
         const totalEV = this.totalEV(options);
         if(this.showEVTable.checked){
             this.resultDiv.appendChild(document.createElement('h2')).innerText = "EV Table";
-            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of correct answers and each column is the number of guesses.";
+            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected EV of every possible combination. Where each row is the number of options selected and each column is the number of correct answers.";
             const EVTable = this.resultDiv.appendChild(this.generateTable(totalEV));
         }
-
-        const weightedAVG = this.weightedAVG(totalEV,prob);
+        
         //Create and add weighted averages table based on prob distrabution
+        const weightedAVG = this.weightedAVG(totalEV, prob);
         if(this.showWeightedAVG.checked){
             this.resultDiv.appendChild(document.createElement('h2')).innerText = "Weighted Averages";
-            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of each number of guesses based on a weighted average on the probability of number of correct answers.";
+            this.resultDiv.appendChild(document.createElement('p')).innerText = "This represents the expected value of each number of options guessed based on a weighted average on the probability distrabution of number of correct answers.";
             const WATable = this.resultDiv.appendChild(document.createElement("table"));
-            WATable.insertRow(-1).insertCell(0).outerHTML = `<th colspan="${options}">Weighted Average</th>`;
-            WATable.insertRow(-1).innerHTML = weightedAVG.map(item => `<td>${item.toFixed(2)}</td>`).join('');
-            //As a percentage
-            WATable.insertRow(-1).insertCell(0).outerHTML = `<th colspan="${options}">As A Percentage</th>`;
-            WATable.insertRow(-1).innerHTML = weightedAVG.map(item => `<td>${(item*100).toFixed(2)}%</td>`).join('');
+            WATable.innerHTML += `<tr>
+                                    <th>#</th>
+                                    <th>Weighted Average</th>
+                                    <th>Percentage</th>
+                                  </tr>`;
+            weightedAVG.map((item, index) => {
+                return `<tr>
+                            <th>${index + 1}</th>
+                            <td>${item.toFixed(2)}</td>
+                            <td>${(item * 100).toFixed(2)}%</td>
+                        </tr>`;
+            }).forEach(rowHtml => WATable.innerHTML += rowHtml);
         }
 
         //Most Optimal
-        this.resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${
-            weightedAVG.reduce((maxIdx, currentVal, currentIdx) => 
-            currentVal > weightedAVG[maxIdx] ? currentIdx : maxIdx, 0) + 1
-        } guesses`;
+        const mostOptimalIndex = weightedAVG.reduce((maxIdx, currentVal, currentIdx) => currentVal > weightedAVG[maxIdx] ? currentIdx : maxIdx, 0);
+        const mostOptimalEV = weightedAVG[mostOptimalIndex].toFixed(4);
+        this.resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${mostOptimalIndex + 1} guesses with an expected EV of ${mostOptimalEV}`;
+        this.resultDiv.appendChild(document.createElement('p')).innerText = `This means that in a multi-select question with ${options} options, where the number of correct options follows the provided probability distrabution, if you always guess ${mostOptimalIndex + 1} of the options you can expect to get ${parseFloat(mostOptimalEV)*100}% of available points.`;
     }
 
     //Creates a 2d array of EV based on number of options for all possible correctAns and guesses
-    //rows: number of correct answers
-    //cols: guesses by player
+    //rows: guesses by player
+    //cols: number of correct answers
     totalEV(options: number): number[][] {
         const totalEV: number[][] = Array.from({ length: options }, () => Array(options).fill(0));
         for(let row = 1; row <= options; row++){
             for(let col = 1; col <= options; col++){
-                const combo = new Combination(options, row, col);
+                const combo = new Combination(options, col, row);
                 totalEV[row-1][col-1] = combo.findEV();
             }
         }
         return totalEV;
     }
+
     //Turns a 2d array into a table
     generateTable(data: number[][]): HTMLTableElement {
         const table = document.createElement('table');
         table.setAttribute('border', '1');
 
         // Generate the header row with column numbers
-        const headerCells = '<th></th>' + data[0].map((_, colIndex) => `<th>${colIndex + 1}</th>`).join('');
+        const headerCells = '<th>#</th>' + data[0].map((_, colIndex) => `<th>${colIndex + 1}</th>`).join('');
         const headerRow = `<tr>${headerCells}</tr>`;
 
         // Generate the data rows
         const dataRows = data.map((rowData, rowIndex) => 
-            `<tr><th>${rowIndex + 1}</th>${rowData.map(cellData => `<td>${cellData}</td>`).join('')}</tr>`
+            `<tr><th>${rowIndex + 1}</th>${rowData.map(cellData => `<td>${cellData.toFixed(2)}</td>`).join('')}</tr>`
         ).join('');
 
         // Combine header and data rows and set as innerHTML
@@ -213,14 +221,14 @@ class FullSolver {
         return table;
     }
 
-    //Gets weighted average from 2d array based an an arr of probabilites (defaults to even distrabution)
+    //Gets weighted average from 2d array based an an arr of probabilites
     weightedAVG(data: number[][], prob: number[]): number[] {
         if(data.length != prob.length){return [];}
 
         const result = new Array(data.length).fill(0);
         for(let row = 0; row < data.length; row++){
             for(let col = 0; col < data.length; col++){
-                result[col] += data[row][col] * prob[row]
+                result[row] += data[row][col] * prob[col]
             }
         }
         return result;
