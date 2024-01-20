@@ -14,7 +14,7 @@
             <option value="fullSolve">Full Solve</option>
         </select>
         <div id="singleSolve">
-            <p>Solves for the expected amount of points you would get for a question based on a certain amount of options, correct answers, and options guessed.</p>
+            <p>Solves for the expected amount of points you would get from a 1 point question based on a certain amount of options, correct answers, and options guessed.</p>
             <form id="singleSolveForm">
                 <label for="options">How many options does the question have?</label>
                 <input type="range" id="options" min="1" max="20" value="5">
@@ -24,7 +24,7 @@
                 <input type="range" id="correctAns" min="1" max="5" value="1">
                 <p>Correct: <span id="correctAnsValue">1</span></p>
 
-                <label for="guesses">How many guess does the player make?</label>
+                <label for="guesses">How many options are selected?</label>
                 <input type="range" id="guesses" min="1" max="5" value="1">
                 <p>Guesses: <span id="guessesValue">1</span></p>
 
@@ -33,7 +33,7 @@
             </form>
         </div>
         <div id="fullSolve" style="display: none;">
-            <p>Solves the expected points for all possible combinations of number of correct answers and options guessed. Used to determine the number of guesses with the highest expected value in points.</p>
+            <p>Solves the expected points for all possible combinations of number of correct answers and options selected. Used to determine the number of guesses with the highest expected value in points.</p>
             <form id="fullSolveForm">
                 <label for="fullSolveOptions">How many options does the question have?</label>
                 <input type="range" id="fullSolveOptions" min="1" max="20" value="5">

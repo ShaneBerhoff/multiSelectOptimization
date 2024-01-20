@@ -167,6 +167,7 @@ class FullSolver {
             this.resultDiv.appendChild(document.createElement('h2')).innerText = "Probability Distribution";
             this.resultDiv.appendChild(document.createElement('p')).innerText = "This shows the proability of each number of correct options occuring under the selected distribution.";
             const probDistTable = this.resultDiv.appendChild(document.createElement("table"));
+            probDistTable.setAttribute('border', '1');
             probDistTable.innerHTML = `<tr><th>#</th>${prob.map((_, index) => `<th>${index + 1}</th>`).join('')}</tr>` + `<tr><th>P</th>${prob.map(value => `<td>${value.toFixed(2)}</td>`).join('')}</tr>`;
             
         }
@@ -179,6 +180,7 @@ class FullSolver {
             
             //Create and add weighted averages table based on prob distrabution
             const WATable = this.resultDiv.appendChild(document.createElement("table"));
+            WATable.setAttribute('border', '1');
             WATable.innerHTML += `<tr>
                                     <th>#</th>
                                     <th>Weighted Average</th>
@@ -196,7 +198,7 @@ class FullSolver {
         //Most Optimal
         const mostOptimalIndex = weightedAVG.reduce((maxIdx, currentVal, currentIdx) => currentVal > weightedAVG[maxIdx] ? currentIdx : maxIdx, 0);
         const mostOptimalEV = weightedAVG[mostOptimalIndex].toFixed(4);
-        this.resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${mostOptimalIndex + 1} guesses with an expected EV of ${mostOptimalEV}`;
+        this.resultDiv.appendChild(document.createElement('h2')).innerText = `Most Optimal: ${mostOptimalIndex + 1} guesses with an EV of ${mostOptimalEV}`;
         this.resultDiv.appendChild(document.createElement('p')).innerText = `This means that in a multi-select question with ${options} options, where the number of correct options follows the provided probability distrabution, if you always guess ${mostOptimalIndex + 1} of the options you can expect to get ${parseFloat(mostOptimalEV)*100}% of available points.`;
     }
 
