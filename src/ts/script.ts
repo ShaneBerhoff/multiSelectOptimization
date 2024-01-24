@@ -53,7 +53,7 @@ class SingleSolver {
 
         // Set result
         const resultDiv = document.getElementById('result') as HTMLDivElement;
-        
+        resultDiv.style.display = 'block';
         resultDiv.innerHTML = '';
     
         // EV Section
@@ -145,12 +145,13 @@ class FullSolver {
         const options = parseInt(this.optionsSliderIn.value);
 
         // Set result
+        this.resultDiv.style.display = 'block';
         this.resultDiv.innerHTML = '';
 
         //get prob dist or show issue
         const prob: number[] | null = this.generateProbDist(options);
         if(prob==null){
-            this.resultDiv.innerText = "Invalid probabilities input."
+            this.resultDiv.innerText = "Invalid probabilities input.";
             return;
         }
 
@@ -167,7 +168,6 @@ class FullSolver {
             this.resultDiv.appendChild(document.createElement('h2')).innerText = "Probability Distribution";
             this.resultDiv.appendChild(document.createElement('p')).innerText = "This shows the proability of each number of correct options occuring under the selected distribution.";
             const probDistTable = this.resultDiv.appendChild(document.createElement("table"));
-            probDistTable.setAttribute('border', '1');
             probDistTable.innerHTML = `<tr><th>#</th>${prob.map((_, index) => `<th>${index + 1}</th>`).join('')}</tr>` + `<tr><th>P</th>${prob.map(value => `<td>${value.toFixed(2)}</td>`).join('')}</tr>`;
             
         }
@@ -180,7 +180,6 @@ class FullSolver {
             
             //Create and add weighted averages table based on prob distrabution
             const WATable = this.resultDiv.appendChild(document.createElement("table"));
-            WATable.setAttribute('border', '1');
             WATable.innerHTML += `<tr>
                                     <th>#</th>
                                     <th>Weighted Average</th>
@@ -219,7 +218,6 @@ class FullSolver {
     //Turns a 2d array into a table
     generateTable(data: number[][]): HTMLTableElement {
         const table = document.createElement('table');
-        table.setAttribute('border', '1');
 
         // Generate the header row with column numbers
         const headerCells = '<th>#</th>' + data[0].map((_, colIndex) => `<th>${colIndex + 1}</th>`).join('');
@@ -307,6 +305,7 @@ dropdown.addEventListener('change', () =>{
         singleSolveDiv.style.display = 'none';
         fullSolveDiv.style.display = 'block';
     }
+    result.style.display = 'none';
     result.innerHTML = '';
 });
 dropdown.dispatchEvent(new Event('change'));
