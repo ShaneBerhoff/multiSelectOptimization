@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Select</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="icon" href="../images/checkbox-image-icon.png" type="image/png">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="main-title">Multi-Select Optimization</h1>
+        </header>
+        <nav class="nav-select">
+            <select id="dropdown" class="dropdown">
+                <option value="singleSolve">Basic Solve</option>
+                <option value="fullSolve">Full Solve</option>
+            </select>
+        </nav>
+        
+        <div id="singleSolve" class="solver-section">
+            <p>Solves for the expected amount of points you would get from a 1 point question based on a certain amount of options, correct answers, and options guessed.</p>
+            <form id="singleSolveForm">
+                <label for="options">How many options does the question have?</label>
+                <input type="range" id="options" min="1" max="20" value="5">
+                <p>Options: <span id="optionsValue">5</span></p>
+                <br>
+                <label for="correctAns">How many are correct?</label>
+                <input type="range" id="correctAns" min="1" max="5" value="1">
+                <p>Correct: <span id="correctAnsValue">1</span></p>
+                <br>
+                <label for="guesses">How many options are selected?</label>
+                <input type="range" id="guesses" min="1" max="5" value="1">
+                <p>Guesses: <span id="guessesValue">1</span></p>
+                <br>
+                <button type="submit">Calculate</button>
+            </form>
+        </div>
+
+        <div id="fullSolve" class="solver-section" style="display: none;">
+            <p>Solves the expected points for all possible combinations of number of correct answers and options selected. Used to determine the number of guesses with the highest expected value in points.</p>
+            <br>
+            <form id="fullSolveForm">
+                <label for="fullSolveOptions">How many options does the question have?</label>
+                <input type="range" id="fullSolveOptions" min="1" max="20" value="5">
+                <p>Options: <span id="fullSolveOptionsValue">5</span></p>
+                <br>
+                <label>
+                    Show full EV table?
+                    <input type="checkbox" id="EVTable">
+                </label>
+                <br>
+                <label>
+                    Show probability distrabution?
+                    <input type="checkbox" id="showProbDist">
+                </label>
+                <label>
+                    Probability Distribution:
+                    <select id="probabilityDist">
+                        <option value="uniformDist">Uniform Distribution</option>
+                        <option value="degenDist">Degenerate Distribution</option>
+                        <option value="normalDist">Discrete Normal Distribution</option>
+                        <option value="customDist">Custom Distribution</option>
+                    </select>
+                </label>
+                <div id="uniformDist">
+                    <p>Equal probability of all 1-N correct answers.</p>
+                </div>
+                <div id="degenDist" style="display: none;">
+                    <p>The selected number of correct answers has a probability of 1 and the rest have a probability of 0.</p>
+                    <input type="number" id="degenDistNum" min="1" max="5" value="1">
+                </div>
+                <div id="normalDist" style="display: none;">
+                    <p>Since the possible number of correct answers is discrete this approximates a normal
+                        distrabution about a mean &mu; and a standard deviation &sigma; for the values.
+                    </p>
+                    <label for="normalDistMean">Mean &mu;</label>
+                    <input type="number" id="normalDistMean" min="1" max="5" value="3" step=".01">
+                    <br>
+                    <label for="normalDistSTD">Standard Deviation &sigma;</label>
+                    <input type="number" id="normalDistSTD" min="1" max="5" value="1" step=".01">
+                </div>
+                <div id="customDist" style="display: none;">
+                    <p>Input a custom probability distribution where the position of the probability 
+                        coresponds to the number of correct answers it applies to. For example .3,.4,.3 
+                        sets the probability of 1 correct answer to .3, probability of 2 correct answers 
+                        to .4, and the probability of 3 correct to .3.</p>
+                    <input type="text" id="customProbs" placeholder="comma separated values: .3,.4,.3">
+                </div>
+                <br>
+                <label>
+                    Show weighted averages?
+                    <input type="checkbox" id="weightedAVG">
+                </label>
+                <br>
+                
+                <button type="submit">Full Calculate</button>
+            </form>
+        </div>
+
+        <div id="result" style="display: none;"></div>
+
+        <a href="about.html" class="about-link">About</a>
+    </div>
+
+    <script type="module" src="../js/script.js"></script>
+</body>
+</html>

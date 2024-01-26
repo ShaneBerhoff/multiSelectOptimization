@@ -1,0 +1,249 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    font-size: calc(14px + 0.3vw);
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    text-decoration: underline;
+    transform: scale(1.10);
+}
+
+/* Container */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+}
+
+.main-title {
+    margin: 0;
+    font-size: 2em;
+}
+
+/* Navigation */
+.nav-select {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.dropdown {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+    text-align: center;
+}
+
+/* Solver Sections */
+.solver-section {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.solver-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #444;
+}
+
+.solver-section input[type="range"],
+.solver-section input[type="number"],
+.solver-section input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    appearance: none;
+}
+
+/* Buttons */
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+    transform: scale(1.02);
+}
+
+/* Result Section */
+#result {
+    background-color: #e9ecef;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+}
+
+/* Links */
+.about-link,
+.back-link {
+    display: inline-block;
+    text-align: left;
+    margin-top: 20px;
+}
+
+/*Probabilities Distribution Section */
+#uniformDist,
+#degenDist,
+#normalDist,
+#benfordDist,
+#customDist {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px;
+}
+
+th {
+    background-color: #f0f0f0;
+}
+
+/* Range Inputs*/
+input[type="range"] {
+    width: 100%;
+    height: 25px;
+    background: #ddd;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    background: #333;
+    cursor: pointer;
+}
+
+input[type="range"]:hover {
+    opacity: 1;
+}
+
+/* Checkbox  */
+input[type="checkbox"] {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+/* Loading and Interactive States (not used right now)*/
+.loading-animation {
+    display: none;
+}
+
+.interactive-hover:hover {
+    background-color: #f8f9fa;
+    transition: background-color 0.3s ease;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    .dropdown {
+        width: 100%;
+    }
+
+    header {
+        padding: 15px 0;
+    }
+
+    .main-title {
+        font-size: 1.5em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .main-title {
+        font-size: 1.2em;
+    }
+    .container {
+        width: 100%;
+        padding: 10px;
+    }
+    .solver-section input[type="range"],
+    .solver-section input[type="number"],
+    .solver-section input[type="text"] {
+        font-size: 0.9em;
+    }
+    button {
+        font-size: 0.9em;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        color: #000;
+        background: #fff;
+    }
+
+    header, .nav-select, button, .about-link {
+        display: none;
+    }
+}
+
+/* High Contrast Mode for Accessibility (not fully tested)*/
+@media screen and (prefers-contrast: high) {
+    body {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .solver-section, #result, table {
+        background-color: #333;
+        color: #fff;
+    }
+}
