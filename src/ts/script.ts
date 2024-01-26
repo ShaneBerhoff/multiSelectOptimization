@@ -75,7 +75,6 @@ class FullSolver {
     uniformDist: HTMLDivElement;
     degenDist: HTMLDivElement;
     normalDist: HTMLDivElement;
-    benfordDist: HTMLDivElement;
     customDist: HTMLDivElement;
     degenDistNum: HTMLInputElement;
     normalDistMean: HTMLInputElement;
@@ -96,7 +95,6 @@ class FullSolver {
         this.uniformDist = document.getElementById("uniformDist") as HTMLDivElement;
         this.degenDist = document.getElementById("degenDist") as HTMLDivElement;
         this.normalDist = document.getElementById("normalDist") as HTMLDivElement;
-        this.benfordDist = document.getElementById("benfordDist") as HTMLDivElement;
         this.customDist = document.getElementById("customDist") as HTMLDivElement;
         //inputs
         this.degenDistNum = document.getElementById("degenDistNum") as HTMLInputElement;
@@ -131,7 +129,7 @@ class FullSolver {
 
     // Handles the visibility of the different probability distributions
     handleProbDivs(){
-        const distributions = ['uniformDist', 'degenDist', 'normalDist', 'benfordDist', 'customDist'];
+        const distributions = ['uniformDist', 'degenDist', 'normalDist', 'customDist'];
         distributions.forEach(dist => {
             (this as any)[dist].style.display = dist === this.probabilityDist.value ? 'block' : 'none';
         });
@@ -265,7 +263,6 @@ class FullSolver {
                 let std:number = parseFloat(this.normalDistSTD.value);
                 result = Array.from({ length: options }, (_, i) => i + 1).map(x => normalPDF(x, mean, std)); //Gets the prob density of each
                 result = result.map(density => density / result.reduce((sum, density) => sum + density, 0)); //normalizes it
-                console.log(result);
                 return result;
             case "customDist":
                 if(this.customProbs == null){return null;}
