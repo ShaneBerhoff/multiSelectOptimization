@@ -2,7 +2,7 @@
 
 ## Description
 
-A tool meant to be used for determining the most optimal guessing stratigy on a mulit-select question based on different conditions.
+A tool meant to be used for determining the most optimal guessing strategy on a multi-select question based on different conditions.
 
 ## Usage
 
