@@ -100,7 +100,7 @@ class FullSolver {
         this.degenDistNum = document.getElementById("degenDistNum") as HTMLInputElement;
         this.normalDistMean = document.getElementById("normalDistMean") as HTMLInputElement;
         this.normalDistSTD = document.getElementById("normalDistSTD") as HTMLInputElement;
-        this.customProbs = document.getElementById("probabilities") as HTMLInputElement;
+        this.customProbs = document.getElementById("customProbs") as HTMLInputElement;
         // Form
         this.form = document.getElementById("fullSolveForm") as HTMLFormElement;
         this.handleSubmit = this.handleSubmit.bind(this);
