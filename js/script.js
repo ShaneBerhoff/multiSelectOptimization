@@ -65,7 +65,7 @@ class FullSolver {
         this.degenDistNum = document.getElementById("degenDistNum");
         this.normalDistMean = document.getElementById("normalDistMean");
         this.normalDistSTD = document.getElementById("normalDistSTD");
-        this.customProbs = document.getElementById("probabilities");
+        this.customProbs = document.getElementById("customProbs");
         // Form
         this.form = document.getElementById("fullSolveForm");
         this.handleSubmit = this.handleSubmit.bind(this);
